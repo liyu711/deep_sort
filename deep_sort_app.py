@@ -14,6 +14,7 @@ from deep_sort.detection import Detection
 from deep_sort.tracker import Tracker
 
 
+
 def gather_sequence_info(sequence_dir, detection_file):
     """Gather sequence information, such as image filenames, detections,
     groundtruth (if available).
@@ -128,7 +129,7 @@ def create_detections(detection_mat, frame_idx, min_height=0):
 
 def run(sequence_dir, detection_file, output_file, min_confidence,
         nms_max_overlap, min_detection_height, max_cosine_distance,
-        nn_budget, display):
+        nn_budget, display, display_output):
     """Run multi-target tracker on a particular sequence.
 
     Parameters
@@ -203,7 +204,7 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
         visualizer = visualization.Visualization(seq_info, update_ms=5)
     else:
         visualizer = visualization.NoVisualization(seq_info)
-    visualizer.run(frame_callback)
+    visualizer.run(display_output, frame_callback)
 
     # Store results.
     f = open(output_file, 'w')
@@ -252,6 +253,10 @@ def parse_args():
     parser.add_argument(
         "--display", help="Show intermediate tracking results",
         default=True, type=bool_string)
+    parser.add_argument(
+        "--display_output",
+        default=None, required=True
+    )
     return parser.parse_args()
 
 
@@ -260,4 +265,4 @@ if __name__ == "__main__":
     run(
         args.sequence_dir, args.detection_file, args.output_file,
         args.min_confidence, args.nms_max_overlap, args.min_detection_height,
-        args.max_cosine_distance, args.nn_budget, args.display)
+        args.max_cosine_distance, args.nn_budget, args.display, args.display_output)

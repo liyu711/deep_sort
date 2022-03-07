@@ -96,8 +96,8 @@ class Visualization(object):
         self.frame_idx = seq_info["min_frame_idx"]
         self.last_idx = seq_info["max_frame_idx"]
 
-    def run(self, frame_callback):
-        self.viewer.run(lambda: self._update_fun(frame_callback))
+    def run(self, output_dir, frame_callback):
+        self.viewer.run(output_dir, lambda: self._update_fun(frame_callback))
 
     def _update_fun(self, frame_callback):
         if self.frame_idx > self.last_idx:

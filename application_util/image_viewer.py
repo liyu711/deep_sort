@@ -5,6 +5,7 @@ This module contains an image viewer and drawing routines based on OpenCV.
 import numpy as np
 import cv2
 import time
+import os
 
 
 def is_in_bounds(mat, roi):
@@ -282,7 +283,7 @@ class ImageViewer(object):
         """
         self._video_writer = None
 
-    def run(self, update_fun=None):
+    def run(self, output_dir, update_fun=None):
         """Start the image viewer.
 
         This method blocks until the user requests to close the window.
@@ -294,6 +295,9 @@ class ImageViewer(object):
             to play an animation/a video sequence.
 
         """
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        counter = 0
         if update_fun is not None:
             self._user_fun = update_fun
 
@@ -308,6 +312,12 @@ class ImageViewer(object):
                         cv2.resize(self.image, self._window_shape))
             t1 = time.time()
             remaining_time = max(1, int(self._update_ms - 1e3*(t1-t0)))
+
+            image_file_name = str(counter) + ".png"
+            image_dir = os.path.join(output_dir, image_file_name)
+            cv2.imwrite(image_dir, self.image)
+            counter += 1
+
             cv2.imshow(
                 self._caption, cv2.resize(self.image, self._window_shape[:2]))
             key = cv2.waitKey(remaining_time)
@@ -334,7 +344,6 @@ class ImageViewer(object):
 
     def stop(self):
         """Stop the control loop.
-
         After calling this method, the viewer will stop execution before the
         next frame and hand over control flow to the user.
 
